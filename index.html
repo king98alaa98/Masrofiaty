@@ -1,257 +1,362 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>تسجيل المصروفات حسب الأشخاص</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Almarai&display=swap" rel="stylesheet">
-<style>
-body { background: #f2f4f7; font-family: 'Almarai', Tahoma, Arial, sans-serif; }
-.card { border-radius: 15px; box-shadow: 0 5px 18px rgba(0,0,0,0.08); cursor: pointer; transition: transform 0.2s ease; }
-.card:hover { transform: scale(1.03); }
-.person-card { position: relative; }
-.delete-btn { position: absolute; top: 10px; left: 10px; background: #dc3545; color: #fff; border: none; border-radius: 50%; width: 28px; height: 28px; font-size: 14px; line-height: 1; display: flex; align-items: center; justify-content: center; }
-.btn-custom { border-radius: 10px; font-size: 0.9rem; padding: 8px 14px; }
-.table thead { background-color: #0d6efd; color: #fff; }
-.table-striped tbody tr:nth-of-type(odd) { background-color: #f8f9fa; }
-.table tfoot { background: #e9ecef; font-weight: bold; }
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>تسجيل المصروفات حسب الأشخاص</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: #f2f4f7;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .card {
+      border-radius: 15px;
+      box-shadow: 0 5px 18px rgba(0,0,0,0.08);
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    .card:hover {
+      transform: scale(1.03);
+    }
+    .person-card {
+      position: relative;
+    }
+    .delete-btn {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: #dc3545;
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      font-size: 14px;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .btn-custom {
+      border-radius: 10px;
+      font-size: 0.9rem;
+      padding: 8px 14px;
+    }
+    .table thead {
+      background-color: #0d6efd;
+      color: #fff;
+    }
+    .table-striped tbody tr:nth-of-type(odd) {
+      background-color: #f8f9fa;
+    }
+    .table tfoot {
+      background: #e9ecef;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body class="p-3">
-<div class="container">
-  <!-- واجهة الأشخاص -->
-  <div id="persons-view">
-    <h3 class="text-center mb-4 text-primary fw-bold">الأشخاص</h3>
-    <form id="person-form" class="row g-3 align-items-end justify-content-center mb-4">
-      <div class="col-sm-6 col-md-4">
-        <label class="form-label">اسم الشخص</label>
-        <input id="person-name" class="form-control" placeholder="أدخل اسم الشخص" required>
+  <div class="container">
+    <!-- واجهة الأشخاص -->
+    <div id="persons-view">
+      <h3 class="text-center mb-4 text-primary fw-bold">الأشخاص</h3>
+      <form id="person-form" class="row g-3 align-items-end justify-content-center mb-4">
+        <div class="col-sm-6 col-md-4">
+          <label class="form-label">اسم الشخص</label>
+          <input id="person-name" class="form-control" placeholder="أدخل اسم الشخص" required>
+        </div>
+        <div class="col-sm-2 d-grid">
+          <button class="btn btn-primary btn-custom">إضافة</button>
+        </div>
+      </form>
+      <div id="persons-list" class="row g-3 justify-content-center"></div>
+    </div>
+
+    <!-- واجهة المصروفات -->
+    <div id="expenses-view" style="display:none;">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 id="person-title" class="text-primary fw-bold"></h3>
+        <button id="back-btn" class="btn btn-outline-secondary btn-custom">رجوع</button>
       </div>
-      <div class="col-sm-2 d-grid">
-        <button class="btn btn-primary btn-custom">إضافة</button>
+
+      <form id="expense-form" class="row g-3 align-items-end">
+        <div class="col-sm-4">
+          <label class="form-label">اسم المصروف</label>
+          <input id="name" class="form-control" placeholder="العنصر" required>
+        </div>
+        <div class="col-sm-3">
+          <label class="form-label">المبلغ</label>
+          <input id="amount" type="number" step="1" class="form-control" required>
+        </div>
+        <div class="col-sm-3">
+          <label class="form-label">التاريخ</label>
+          <input id="date" type="date" class="form-control" required>
+        </div>
+        <div class="col-sm-2 d-grid">
+          <button id="add-btn" class="btn btn-primary btn-custom">أضف</button>
+        </div>
+      </form>
+
+      <hr class="my-4">
+      <div class="mb-3">
+        <button id="clear-btn" class="btn btn-outline-danger btn-custom me-2">مسح الكل</button>
+        <button id="download-btn" class="btn btn-success btn-custom">تصدير PDF</button>
       </div>
-    </form>
-    <div id="persons-list" class="row g-3 justify-content-center"></div>
+
+      <div class="table-responsive">
+        <table id="expenses-table" class="table table-bordered table-striped text-center align-middle bg-white">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>اسم المصروف</th>
+              <th>المبلغ</th>
+              <th>التاريخ</th>
+              <th>إجراء</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+          <tfoot>
+            <tr>
+              <th colspan="2" class="text-end">المجموع</th>
+              <th id="tfoot-total">0</th>
+              <th colspan="2"></th>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
   </div>
 
-  <!-- واجهة المصروفات -->
-  <div id="expenses-view" style="display:none;">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <h3 id="person-title" class="text-primary fw-bold"></h3>
-      <button id="back-btn" class="btn btn-outline-secondary btn-custom">رجوع</button>
-    </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script>
+    let data = JSON.parse(localStorage.getItem('personsData') || '{}');
+    let currentPerson = null;
+    let editingIndex = null;
 
-    <form id="expense-form" class="row g-3 align-items-end">
-      <div class="col-sm-4">
-        <label class="form-label">اسم المصروف</label>
-        <input id="name" class="form-control" placeholder="العنصر" required>
-      </div>
-      <div class="col-sm-3">
-        <label class="form-label">المبلغ</label>
-        <input id="amount" type="number" step="1" class="form-control" required>
-      </div>
-      <div class="col-sm-3">
-        <label class="form-label">التاريخ</label>
-        <input id="date" type="date" class="form-control" required>
-      </div>
-      <div class="col-sm-2 d-grid">
-        <button id="add-btn" class="btn btn-primary btn-custom">أضف</button>
-      </div>
-    </form>
+    const personsView = document.getElementById('persons-view');
+    const expensesView = document.getElementById('expenses-view');
+    const personsList = document.getElementById('persons-list');
+    const personInput = document.getElementById('person-name');
+    const personForm = document.getElementById('person-form');
+    const personTitle = document.getElementById('person-title');
 
-    <hr class="my-4">
-    <div class="mb-3">
-      <button id="clear-btn" class="btn btn-outline-danger btn-custom me-2">مسح الكل</button>
-      <button id="download-btn" class="btn btn-success btn-custom">تصدير PDF</button>
-    </div>
+    const nameInput = document.getElementById('name');
+    const amountInput = document.getElementById('amount');
+    const dateInput = document.getElementById('date');
+    const tableBody = document.querySelector('#expenses-table tbody');
+    const tfootTotal = document.getElementById('tfoot-total');
+    const addBtn = document.getElementById('add-btn');
 
-    <div class="table-responsive">
-      <table id="expenses-table" class="table table-bordered table-striped text-center align-middle bg-white">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>اسم المصروف</th>
-            <th>المبلغ</th>
-            <th>التاريخ</th>
-            <th>إجراء</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-        <tfoot>
-          <tr>
-            <th colspan="2" class="text-end">المجموع</th>
-            <th id="tfoot-total">0</th>
-            <th colspan="2"></th>
-          </tr>
-        </tfoot>
-      </table>
-    </div>
-  </div>
-</div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-<script>
-let data = JSON.parse(localStorage.getItem('personsData') || '{}');
-let currentPerson = null;
-let editingIndex = null;
-
-const personsView = document.getElementById('persons-view');
-const expensesView = document.getElementById('expenses-view');
-const personsList = document.getElementById('persons-list');
-const personInput = document.getElementById('person-name');
-const personForm = document.getElementById('person-form');
-const personTitle = document.getElementById('person-title');
-
-const nameInput = document.getElementById('name');
-const amountInput = document.getElementById('amount');
-const dateInput = document.getElementById('date');
-const tableBody = document.querySelector('#expenses-table tbody');
-const tfootTotal = document.getElementById('tfoot-total');
-const addBtn = document.getElementById('add-btn');
-
-personForm.addEventListener('submit', e => {
-  e.preventDefault();
-  const name = personInput.value.trim();
-  if (!name) return;
-  if (data[name]) return alert('هذا الاسم موجود بالفعل.');
-  data[name] = [];
-  saveData();
-  personInput.value = '';
-  renderPersons();
-});
-
-function saveData(){ localStorage.setItem('personsData', JSON.stringify(data)); }
-
-function renderPersons(){
-  personsList.innerHTML = '';
-  const names = Object.keys(data);
-  if(names.length===0){ personsList.innerHTML='<p class="text-center text-muted">لا يوجد أشخاص بعد.</p>'; return; }
-  names.forEach(name=>{
-    const div=document.createElement('div');
-    div.className='col-sm-6 col-md-4 col-lg-3';
-    div.innerHTML=`<div class="card p-3 text-center person-card">
-      <button class="delete-btn" onclick="deletePerson('${name}')">×</button>
-      <h5 class="mt-3 mb-2">${name}</h5></div>`;
-    div.querySelector('.card').addEventListener('click', e=>{
-      if(e.target.classList.contains('delete-btn')) return;
-      openPerson(name);
+    personForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const name = personInput.value.trim();
+      if (!name) return;
+      if (data[name]) return alert('هذا الاسم موجود بالفعل.');
+      data[name] = [];
+      saveData();
+      personInput.value = '';
+      renderPersons();
     });
-    personsList.appendChild(div);
-  });
-}
 
-window.deletePerson=function(name){
-  if(confirm(`هل تريد حذف ${name} وجميع مصروفاته؟`)){
-    delete data[name]; saveData(); renderPersons();
-  }
-}
+    function saveData(){
+      localStorage.setItem('personsData', JSON.stringify(data));
+    }
 
-function openPerson(name){
-  currentPerson=name;
-  personTitle.textContent=`مصروفات ${name}`;
-  personsView.style.display='none';
-  expensesView.style.display='block';
-  renderTable();
-}
+    function renderPersons(){
+      personsList.innerHTML = '';
+      const names = Object.keys(data);
+      if(names.length === 0){
+        personsList.innerHTML = '<p class="text-center text-muted">لا يوجد أشخاص بعد.</p>';
+        return;
+      }
+      names.forEach(name => {
+        const div = document.createElement('div');
+        div.className = 'col-sm-6 col-md-4 col-lg-3';
+        div.innerHTML = `
+          <div class="card p-3 text-center person-card">
+            <button class="delete-btn" onclick="deletePerson('${name}')">×</button>
+            <h5 class="mt-3 mb-2">${name}</h5>
+          </div>`;
+        div.querySelector('.card').addEventListener('click', (e)=>{
+          if(e.target.classList.contains('delete-btn')) return;
+          openPerson(name);
+        });
+        personsList.appendChild(div);
+      });
+    }
 
-document.getElementById('back-btn').addEventListener('click', ()=>{
-  currentPerson=null; expensesView.style.display='none'; personsView.style.display='block'; renderPersons();
-});
+    window.deletePerson = function(name){
+      if(confirm(`هل تريد حذف ${name} وجميع مصروفاته؟`)){
+        delete data[name];
+        saveData();
+        renderPersons();
+      }
+    }
 
-document.getElementById('expense-form').addEventListener('submit', function(e){
-  e.preventDefault();
-  let name = nameInput.value.trim();
-  name = name.replace(/\s+/g,' ').trim(); // تنظيف النص
-  const amount = parseInt(amountInput.value);
-  const date = dateInput.value;
-  if(!name || !amount || !date){ alert('يرجى إدخال جميع الحقول.'); return; }
-  if(editingIndex!==null){ data[currentPerson][editingIndex]={name,amount,date}; editingIndex=null; addBtn.textContent='أضف'; }
-  else{ data[currentPerson].push({name,amount,date}); }
-  saveData(); renderTable();
-  nameInput.value=''; amountInput.value=''; dateInput.value='';
-});
+    function openPerson(name){
+      currentPerson = name;
+      personTitle.textContent = `مصروفات ${name}`;
+      personsView.style.display = 'none';
+      expensesView.style.display = 'block';
+      renderTable();
+    }
 
-function editExpense(index){
-  const exp=data[currentPerson][index];
-  nameInput.value=exp.name; amountInput.value=exp.amount; dateInput.value=exp.date;
-  editingIndex=index; addBtn.textContent='تحديث';
-}
+    document.getElementById('back-btn').addEventListener('click', ()=>{
+      currentPerson = null;
+      expensesView.style.display = 'none';
+      personsView.style.display = 'block';
+      renderPersons();
+    });
 
-function removeExpense(index){
-  if(confirm('هل تريد حذف هذا المصروف؟')){ data[currentPerson].splice(index,1); saveData(); renderTable(); }
-}
+    document.getElementById('expense-form').addEventListener('submit', function(e){
+      e.preventDefault();
+      const name = nameInput.value.trim();
+      const amount = parseInt(amountInput.value);
+      const date = dateInput.value;
+      if(!name || !amount || !date){
+        alert('يرجى إدخال جميع الحقول.');
+        return;
+      }
+      if(editingIndex !== null){
+        data[currentPerson][editingIndex] = { name, amount, date };
+        editingIndex = null;
+        addBtn.textContent = 'أضف';
+      } else {
+        data[currentPerson].push({ name, amount, date });
+      }
+      saveData();
+      renderTable();
+      nameInput.value = '';
+      amountInput.value = '';
+      dateInput.value = '';
+    });
 
-function clearAll(){
-  if(data[currentPerson].length===0) return alert('لا توجد بيانات.');
-  if(confirm('هل تريد مسح جميع المصروفات؟')){ data[currentPerson]=[]; saveData(); renderTable(); }
-}
+    function editExpense(index){
+      const exp = data[currentPerson][index];
+      nameInput.value = exp.name;
+      amountInput.value = exp.amount;
+      dateInput.value = exp.date;
+      editingIndex = index;
+      addBtn.textContent = 'تحديث';
+    }
 
-function renderTable(){
-  tableBody.innerHTML=''; let total=0;
-  const expenses=data[currentPerson]||[];
-  const reversed=[...expenses].reverse();
-  reversed.forEach((item,i)=>{
-    const tr=document.createElement('tr');
-    tr.innerHTML=`<td>${reversed.length-i}</td><td>${escapeHtml(item.name)}</td><td>${Math.round(item.amount)}</td><td>${item.date}</td>
-    <td>
-      <button class="btn btn-sm btn-outline-primary me-1 btn-custom" onclick="editExpense(${expenses.length-1-i})">تعديل</button>
-      <button class="btn btn-sm btn-outline-danger btn-custom" onclick="removeExpense(${expenses.length-1-i})">حذف</button>
-    </td>`;
-    tableBody.appendChild(tr);
-    total+=item.amount;
-  });
-  tfootTotal.textContent=Math.round(total);
-}
+    function removeExpense(index){
+      if(confirm('هل تريد حذف هذا المصروف؟')){
+        data[currentPerson].splice(index, 1);
+        saveData();
+        renderTable();
+      }
+    }
 
-document.getElementById('clear-btn').addEventListener('click', clearAll);
+    function clearAll(){
+      if(data[currentPerson].length === 0) return alert('لا توجد بيانات.');
+      if(confirm('هل تريد مسح جميع المصروفات؟')){
+        data[currentPerson] = [];
+        saveData();
+        renderTable();
+      }
+    }
 
-// تصدير PDF مضمون
-document.getElementById('download-btn').addEventListener('click', ()=>{
-  const expenses=data[currentPerson]||[];
-  if(expenses.length===0){ alert('لا توجد بيانات لتصديرها.'); return; }
-  const total=expenses.reduce((sum,e)=>sum+e.amount,0);
+    function renderTable(){
+      tableBody.innerHTML = '';
+      let total = 0;
+      const expenses = data[currentPerson] || [];
+      const reversed = [...expenses].reverse();
+      reversed.forEach((item, i)=>{
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${reversed.length - i}</td>
+          <td>${escapeHtml(item.name)}</td>
+          <td>${Math.round(item.amount)}</td>
+          <td>${item.date}</td>
+          <td>
+            <button class="btn btn-sm btn-outline-primary me-1 btn-custom" onclick="editExpense(${expenses.length - 1 - i})">تعديل</button>
+            <button class="btn btn-sm btn-outline-danger btn-custom" onclick="removeExpense(${expenses.length - 1 - i})">حذف</button>
+          </td>`;
+        tableBody.appendChild(tr);
+        total += item.amount;
+      });
+      tfootTotal.textContent = Math.round(total);
+    }
 
-  const content=document.createElement('div');
-  content.style.textAlign='center'; content.style.direction='rtl'; content.style.fontFamily="'Almarai', Tahoma, Arial, sans-serif";
-  content.innerHTML=`<h2 style="color:#0d6efd;margin-bottom:0;">قائمة المصروفات</h2>
-  <h4 style="margin-top:5px;margin-bottom:25px;color:#333;">${currentPerson}</h4>`;
+    document.getElementById('clear-btn').addEventListener('click', clearAll);
 
-  const clonedTable=document.getElementById('expenses-table').cloneNode(true);
-  clonedTable.querySelectorAll('th:last-child,td:last-child').forEach(el=>el.remove());
-  clonedTable.style.margin='auto'; clonedTable.style.width='90%'; clonedTable.style.borderCollapse='collapse'; clonedTable.style.fontSize='14px';
-  clonedTable.querySelectorAll('th').forEach(th=>{ th.style.backgroundColor='#0d6efd'; th.style.color='#fff'; th.style.padding='8px'; th.style.border='1px solid #ccc'; });
-  clonedTable.querySelectorAll('td').forEach(td=>{ td.style.padding='8px'; td.style.border='1px solid #ccc'; });
-  clonedTable.querySelectorAll('tr:nth-child(even)').forEach(tr=>{ tr.style.backgroundColor='#f8f9fa'; });
+    // تصدير PDF مع فقرة المجموع منفصلة أسفل الجدول
+    document.getElementById('download-btn').addEventListener('click', () => {
+      const expenses = data[currentPerson] || [];
+      if (expenses.length === 0) {
+        alert('لا توجد بيانات لتصديرها.');
+        return;
+      }
 
-  content.appendChild(clonedTable);
+      const total = expenses.reduce((sum, e) => sum + e.amount, 0);
 
-  const totalDiv=document.createElement('div');
-  totalDiv.style.marginTop='25px'; totalDiv.style.padding='15px'; totalDiv.style.width='50%'; totalDiv.style.marginLeft='auto';
-  totalDiv.style.marginRight='auto'; totalDiv.style.backgroundColor='#ffd966'; totalDiv.style.border='2px solid #f4b400';
-  totalDiv.style.borderRadius='10px'; totalDiv.style.boxShadow='0 4px 10px rgba(0,0,0,0.1)';
-  totalDiv.innerHTML=`<h3 style="color:#bf6d00;margin:0;">إجمالي المصروفات</h3>
-  <p style="font-size:20px;font-weight:bold;margin:5px 0 0 0;color:#bf6d00;">${total}</p>`;
-  content.appendChild(totalDiv);
+      const content = document.createElement('div');
+      content.style.textAlign = 'center';
+      content.style.direction = 'rtl';
+      content.style.fontFamily = 'Tahoma';
+      content.innerHTML = `
+        <h2 style="color:#0d6efd; margin-bottom:0;">قائمة المصروفات</h2>
+        <h4 style="margin-top:5px; margin-bottom:25px; color:#333;">${currentPerson}</h4>
+      `;
 
-  const opt={
-    margin:0.7,
-    filename:`مصروفات_${currentPerson}.pdf`,
-    image:{type:'jpeg',quality:1},
-    html2canvas:{scale:4,useCORS:true,backgroundColor:'#ffffff'},
-    jsPDF:{unit:'cm',format:'a4',orientation:'portrait'}
-  };
+      const clonedTable = document.getElementById('expenses-table').cloneNode(true);
+      clonedTable.querySelectorAll('th:last-child, td:last-child').forEach(el => el.remove());
+      clonedTable.style.margin = 'auto';
+      clonedTable.style.width = '90%';
+      clonedTable.style.borderCollapse = 'collapse';
+      clonedTable.style.fontSize = '14px';
+      clonedTable.querySelectorAll('th').forEach(th => {
+        th.style.backgroundColor = '#0d6efd';
+        th.style.color = '#fff';
+        th.style.padding = '8px';
+        th.style.border = '1px solid #ccc';
+      });
+      clonedTable.querySelectorAll('td').forEach(td => {
+        td.style.padding = '8px';
+        td.style.border = '1px solid #ccc';
+      });
+      clonedTable.querySelectorAll('tr:nth-child(even)').forEach(tr => {
+        tr.style.backgroundColor = '#f8f9fa';
+      });
 
-  // ✅ الانتظار حتى تحميل الخطوط قبل التصدير
-  document.fonts.ready.then(()=>{ html2pdf().set(opt).from(content).save(); });
-});
+      content.appendChild(clonedTable);
 
-function escapeHtml(text){
-  const map={'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'};
-  return text.replace(/[&<>"']/g,m=>map[m]);
-}
+      // فقرة المجموع تحت الجدول، في الوسط، منسقة وملونة
+      const totalDiv = document.createElement('div');
+      totalDiv.style.marginTop = '25px';
+      totalDiv.style.padding = '15px';
+      totalDiv.style.width = '50%';
+      totalDiv.style.marginLeft = 'auto';
+      totalDiv.style.marginRight = 'auto';
+      totalDiv.style.backgroundColor = '#ffd966'; // خلفية صفراء فاتحة
+      totalDiv.style.border = '2px solid #f4b400'; // حدود برتقالية
+      totalDiv.style.borderRadius = '10px';
+      totalDiv.style.boxShadow = '0 4px 10px rgba(0,0,0,0.1)';
+      totalDiv.innerHTML = `
+        <h3 style="color:#bf6d00; margin:0;">إجمالي المصروفات</h3>
+        <p style="font-size:20px; font-weight:bold; margin:5px 0 0 0; color:#bf6d00;">${total}</p>
+      `;
+      content.appendChild(totalDiv);
 
-renderPersons();
-</script>
+      const opt = {
+        margin: 0.7,
+        filename: `مصروفات_${currentPerson}.pdf`,
+        image: { type: 'jpeg', quality: 1 },
+        html2canvas: { scale: 3, useCORS: true, backgroundColor: '#ffffff' },
+        jsPDF: { unit: 'cm', format: 'a4', orientation: 'portrait' }
+      };
+
+      html2pdf().set(opt).from(content).save();
+    });
+
+    function escapeHtml(text){
+      const map = { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#039;' };
+      return text.replace(/[&<>\"']/g, m => map[m]);
+    }
+
+    renderPersons();
+  </script>
 </body>
 </html>
