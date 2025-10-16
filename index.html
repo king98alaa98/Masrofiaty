@@ -282,7 +282,7 @@
 
     document.getElementById('clear-btn').addEventListener('click', clearAll);
 
-    // تصدير PDF مع فقرة المجموع منفصلة أسفل الجدول وعرضه في نافذة جديدة
+    // تصدير PDF مع فقرة المجموع منفصلة أسفل الجدول
     document.getElementById('download-btn').addEventListener('click', () => {
       const expenses = data[currentPerson] || [];
       if (expenses.length === 0) {
@@ -323,14 +323,15 @@
 
       content.appendChild(clonedTable);
 
+      // فقرة المجموع تحت الجدول، في الوسط، منسقة وملونة
       const totalDiv = document.createElement('div');
       totalDiv.style.marginTop = '25px';
       totalDiv.style.padding = '15px';
       totalDiv.style.width = '50%';
       totalDiv.style.marginLeft = 'auto';
       totalDiv.style.marginRight = 'auto';
-      totalDiv.style.backgroundColor = '#ffd966';
-      totalDiv.style.border = '2px solid #f4b400';
+      totalDiv.style.backgroundColor = '#ffd966'; // خلفية صفراء فاتحة
+      totalDiv.style.border = '2px solid #f4b400'; // حدود برتقالية
       totalDiv.style.borderRadius = '10px';
       totalDiv.style.boxShadow = '0 4px 10px rgba(0,0,0,0.1)';
       totalDiv.innerHTML = `
@@ -347,13 +348,7 @@
         jsPDF: { unit: 'cm', format: 'a4', orientation: 'portrait' }
       };
 
-      // عرض PDF في نافذة جديدة لتجنب مشكلة التحميل الفارغ
-      html2pdf().set(opt).from(content).outputPdf('datauristring').then(function(pdfAsString){
-        const pdfWindow = window.open("");
-        pdfWindow.document.write(
-          "<iframe width='100%' height='100%' src='" + pdfAsString + "'></iframe>"
-        );
-      });
+      html2pdf().set(opt).from(content).save();
     });
 
     function escapeHtml(text){
